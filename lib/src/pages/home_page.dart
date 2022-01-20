@@ -15,6 +15,45 @@ class _HomePageState extends State<HomePage> {
 
   bool _validate = false;
 
+  _start() {
+    return SizedBox(
+      width: MediaQuery.of(context).size.width,
+      height: MediaQuery.of(context).size.height,
+      child: Column(
+        children: [
+          const SizedBox(height: 50),
+          const Text(
+            'Digite o CEP',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: TextField(
+              keyboardType: TextInputType.number,
+              controller: controller.cepText,
+              decoration: InputDecoration(
+                  border: const OutlineInputBorder(),
+                  errorText: _validate ? 'CEP inválido' : null),
+            ),
+          ),
+          ElevatedButton(
+              onPressed: () async {
+                var _validCharacters = RegExp(r'^[0-9]+$');
+                String _cep = controller.cepText.text;
+                setState(() {
+                  _cep.isEmpty || !_validCharacters.hasMatch(_cep)
+                      ? _validate = true
+                      : _validate = false;
+                });
+                if (!_validate) await controller.findCep();
+              },
+              child: const Text('Buscar'))
+        ],
+      ),
+    );
+  }
+
   _success() {
     return SizedBox(
       width: MediaQuery.of(context).size.width,
@@ -53,10 +92,10 @@ class _HomePageState extends State<HomePage> {
     return Center(
       child: Column(
         children: [
-          SizedBox(height: 30),
+          const SizedBox(height: 30),
           Text(
               '${controller.cep.error?.replaceAll('Exception: ', '')} (${controller.cep.cep}) '),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           ElevatedButton(
             onPressed: () {
               cepText.text = '';
@@ -72,46 +111,6 @@ class _HomePageState extends State<HomePage> {
   _loading() {
     return const Center(
       child: CircularProgressIndicator(),
-    );
-  }
-
-  // final TextEditingController controller;
-
-  _start() {
-    return SizedBox(
-      width: MediaQuery.of(context).size.width,
-      height: MediaQuery.of(context).size.height,
-      child: Column(
-        children: [
-          const SizedBox(height: 50),
-          const Text(
-            'Digite o CEP',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 20),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
-                keyboardType: TextInputType.number,
-                controller: controller.cepText,
-                decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    errorText: _validate ? 'CEP inválido' : null)),
-          ),
-          ElevatedButton(
-              onPressed: () async {
-                var _validCharacters = RegExp(r'^[0-9]+$');
-                String _cep = controller.cepText.text;
-                setState(() {
-                  _cep.isEmpty || !_validCharacters.hasMatch(_cep)
-                      ? _validate = true
-                      : _validate = false;
-                });
-                if (!_validate) await controller.findCep();
-              },
-              child: Text('Buscar'))
-        ],
-      ),
     );
   }
 
@@ -147,7 +146,6 @@ class _HomePageState extends State<HomePage> {
         animation: controller.state,
         builder: (context, child) {
           return manageState(controller.state.value);
-          // return manageState(HomeState.start);
         },
       ),
     );
